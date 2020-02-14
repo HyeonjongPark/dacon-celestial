@@ -31,6 +31,4 @@ valid <- o_train[-inTrain,]
 rm(inTrain)
 
 
-library(doParallel)
-cores <- 7
-registerDoParallel(cores = cores)
+

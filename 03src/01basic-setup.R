@@ -19,3 +19,7 @@ ipak <- function(pkg){
 ipak(pkg)
 
 
+
+#library(doParallel)
+#cores <- 7
+#registerDoParallel(cores = cores)
