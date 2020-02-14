@@ -29,7 +29,7 @@ varImp(rpart_model) %>% kable()
 
 
 ## randomforest
-
+?randomForest
 set.seed(1)
 
 rf_model <- randomForest(type ~., train[,!colnames(train) %in% c("id")])
@@ -37,13 +37,23 @@ rf_model <- randomForest(type ~., train[,!colnames(train) %in% c("id")])
 rf_result <- predict(rf_model, newdata = valid[,!colnames(valid) %in% c("type")])
 rf_result_proba <- predict(rf_model, newdata = valid[,!colnames(valid) %in% c("type")], type = "prob")
 
-rf_result_proba
 rf_result
+rf_result_proba
 
 confusionMatrix(rf_result, valid$type) # 0.8804
 
 varImp(rf_model) %>% kable()
 varImpPlot(rf_model)
+
+
+
+LogLoss=function(actual, predicted)
+{
+  result=-1/length(actual)*(sum((actual*log(predicted)+(1-actual)*log(1-predicted))))
+  return(result)
+}
+
+LogLoss(rf_result_proba, valid)
 
 
 

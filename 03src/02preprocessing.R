@@ -32,3 +32,5 @@ rm(inTrain)
 
 
 
+train %>% group_by(type) %>% count()
+
