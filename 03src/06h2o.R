@@ -22,6 +22,7 @@ h2o.model <- h2o.deeplearning(x = setdiff(names(train), c("id","type")),
                               epochs = 1000,
                               standardize = TRUE,         # standardize data
                               hidden = c(50,50,50,50),       # 2 layers of 00 nodes each
+                              stopping_metric = "logloss",
                               rate = 0.03,                # learning rate
                               seed = 1                # reproducability seed
 )
@@ -40,7 +41,7 @@ confusionMatrix(h2o.predictions$predict, valid$type) # 0.848
 h2o.predictions = h2o.predictions[,-1]
 h2o.predictions$id = o_test$id 
 h2o.predictions = h2o.predictions[,c(20,1:19)]
-#fwrite(h2o.predictions, "./06submission/h2o-pred3.csv")
+#fwrite(h2o.predictions, "./06submission/h2o-pred3-1.csv")
 
 
 #rm(h2o.model, h2o.train, h2o.valid, h2o.predictions)

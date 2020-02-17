@@ -1,10 +1,11 @@
 getwd()
+rm(list=ls())
 
 # 사용하고자 하는 패키지를 벡터로 저장
 pkg = c("tidyverse", "skimr", "GGally", "plotly", "viridis", "caret", "randomForest", "e1071",
         "rpart", "xgboost", "h2o", "corrplot", "knitr", "rattle",
         "rpart.plot", "corrgram", "visNetwork","sparkline",
-        "mlbench","doMC", "data.table", "dplyr")
+        "mlbench","doMC", "data.table", "dplyr","parallelSVM")
 
 
 # 기존에 설치 되어있는 패키지를 제외하고 설치하고 알아서 로드한다. 

@@ -1,7 +1,7 @@
 # xgboost
 
 
-data.train <- xgb.DMatrix(data = data.matrix(train[, !colnames(valid) %in% c("id","type")]), label = train$type)
+data.train <- xgb.DMatrix(data = data.matrix(train[, !colnames(train) %in% c("id","type")]), label = train$type)
 data.valid <- xgb.DMatrix(data = data.matrix(valid[, !colnames(valid) %in% c("id","type")]))
 
 str(train)
@@ -13,7 +13,7 @@ parameters <- list(
   silent             = 0,           
   
   # Booster Parameters
-  eta                = 0.03,              
+  eta                = 0.3,              
   gamma              = 0.7,                 
   max_depth          = 10,                
   min_child_weight   = 2,            
@@ -37,7 +37,7 @@ parameters <- list(
 
 
 
-xgb_model <- xgb.train(parameters, data.train, nrounds = 350)
+xgb_model <- xgb.train(parameters, data.train, nrounds = 300)
 
 
 xgb_pred <- predict(xgb_model, data.valid)
@@ -55,7 +55,7 @@ xgb_pred_proba$id = o_test$id
 
 xgb_pred_proba = xgb_pred_proba[,c(20,1:19)]
 
-# fwrite(xgb_pred_proba, "./06submission/xgb/xgb-pred1.csv")
+# fwrite(xgb_pred_proba, "./06submission/xgb/xgb-pred2.csv")
 
 
 

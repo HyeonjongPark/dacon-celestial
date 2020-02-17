@@ -35,5 +35,5 @@ rm(inTrain)
 train %>% group_by(type) %>% count()
 
 
-# train = o_train
-# valid = o_test
+train = o_train
+valid = o_test

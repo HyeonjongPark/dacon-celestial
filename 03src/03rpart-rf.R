@@ -49,7 +49,7 @@ rf_multi_result <- predict(rf, newdata = valid[,!colnames(valid) %in% c("type")]
 
 
 rf_result <- predict(rf_model, newdata = valid[,!colnames(valid) %in% c("type")])
-rf_result_proba <- predict(rf_model, newdata = valid[,!colnames(valid) %in% c("type")], type = "prob")
+rf_result_proba <- predict(rf_model, newdata = valid[,!colnames(valid) %in% c("id","type")], type = "prob")
 
 rf_result
 rf_result_proba
@@ -58,6 +58,14 @@ confusionMatrix(rf_result, valid$type) # 0.8804
 
 varImp(rf_model) %>% kable()
 varImpPlot(rf_model)
+
+
+rf_result_proba = as.data.frame(rf_result_proba)
+rf_result_proba$id = o_test$id
+rf_result_proba = rf_result_proba[,c(ncol(rf_result_proba),1:(ncol(rf_result_proba)-1))]
+
+fwrite(rf_result_proba, "./06submission/rf-pred1.csv")
+
 
 
 
