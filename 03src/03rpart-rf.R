@@ -6,18 +6,18 @@ rpart_model <- rpart(type~.,  train[,!colnames(train) %in% c("id")])
 
 
 
-rpart.plot(rpart_model)
-visTree(rpart_model)
+#rpart.plot(rpart_model)
+#visTree(rpart_model)
 
 
-fancyRpartPlot(rpart_model)
+#fancyRpartPlot(rpart_model)
 
 rpart_result <- predict(rpart_model, newdata = valid[,!colnames(valid) %in% c("type")], type='class')
 rpart_result_proba <- predict(rpart_model, newdata = valid[,!colnames(valid) %in% c("type")], type ="prob")
 
-rpart_result_proba
-
 confusionMatrix(rpart_result, as.factor(valid$type))  # 0.707
+
+rpart_result_proba
 
 varImp(rpart_model) %>% kable()
 
@@ -29,10 +29,24 @@ varImp(rpart_model) %>% kable()
 
 
 ## randomforest
-?randomForest
 set.seed(1)
 
 rf_model <- randomForest(type ~., train[,!colnames(train) %in% c("id")])
+
+## 병렬 컴퓨팅 시도 - 실패?
+
+registerDoMC(20) #number of cores on the machine
+darkAndScaryForest <- foreach(y=seq(10), .combine=combine ) %dopar% {
+  set.seed(1) # not really needed
+  rf <- randomForest(type ~., train[,!colnames(train) %in% c("id")])
+}
+
+rf_multi_result <- predict(rf, newdata = valid[,!colnames(valid) %in% c("type")])
+
+##
+
+
+
 
 rf_result <- predict(rf_model, newdata = valid[,!colnames(valid) %in% c("type")])
 rf_result_proba <- predict(rf_model, newdata = valid[,!colnames(valid) %in% c("type")], type = "prob")

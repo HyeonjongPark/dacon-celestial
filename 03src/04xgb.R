@@ -13,39 +13,50 @@ parameters <- list(
   silent             = 0,           
   
   # Booster Parameters
-  eta                = 0.08,              
+  eta                = 0.03,              
   gamma              = 0.7,                 
-  max_depth          = 8,                
+  max_depth          = 10,                
   min_child_weight   = 2,            
-  subsample          = .9,                 
-  colsample_bytree   = .5,                
+  subsample          = .8,                 
+  colsample_bytree   = .8,                
   colsample_bylevel  = 1,          
   lambda             = 1,    
   alpha              = 0,       
   
   # Task Parameters
-  objective          = "multi:softmax",   # default = "reg:linear" , "softmax", softprob
-  eval_metric        = "merror",          # merror , logloss
+  objective          = "multi:softprob",   # default = "reg:linear" , "softmax", softprob
+  eval_metric        = "logloss",          # merror , logloss
   num_class          = length(unique(train$type)) + 1, # 클래스 갯수
   seed               = 1,                 # reproducability seed
   tree_method        = "hist",
-  grow_policy        = "lossguide"
+  grow_policy        = "lossguide",
+  
+  print_every_n      = 1,
+  verbose            = 1
 )
 
 
 
-xgb_model <- xgb.train(parameters, data.train, nrounds = 100)
+xgb_model <- xgb.train(parameters, data.train, nrounds = 350)
 
 
 xgb_pred <- predict(xgb_model, data.valid)
 xgb_pred
+
+confusionMatrix(as.factor(xgb_pred), as.factor(as.integer(valid$type))) # 0.872
 
 # softpob으로 설정하고 matrix 아래 코드를 실행해주면 클래스별로 prob을 확인할 수 있다.
 xgb_pred_proba = matrix(xgb_pred, ncol = 20, byrow = T)[,-1] 
 colnames(xgb_pred_proba) = col
 xgb_pred_proba
 
-confusionMatrix(as.factor(xgb_pred), as.factor(as.integer(valid$type))) # 0.872
+xgb_pred_proba = as.data.frame(xgb_pred_proba)
+xgb_pred_proba$id = o_test$id
+
+xgb_pred_proba = xgb_pred_proba[,c(20,1:19)]
+
+# fwrite(xgb_pred_proba, "./06submission/xgb/xgb-pred1.csv")
+
 
 
 xgb.importance(colnames(train[, !colnames(valid) %in% c("type")]), model = xgb_model) %>% kable()
