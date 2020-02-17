@@ -35,7 +35,7 @@ parameters <- list(
   verbose            = 1
 )
 
-
+parameters
 
 xgb_model <- xgb.train(parameters, data.train, nrounds = 300)
 
@@ -46,7 +46,7 @@ xgb_pred
 confusionMatrix(as.factor(xgb_pred), as.factor(as.integer(valid$type))) # 0.872
 
 # softpob으로 설정하고 matrix 아래 코드를 실행해주면 클래스별로 prob을 확인할 수 있다.
-xgb_pred_proba = matrix(xgb_pred, ncol = 20, byrow = T)[,-1] 
+xgb_pred_proba = matrix(xgb_pred, ncol = (length(unique(train$type)) + 1) , byrow = T)[,-1] 
 colnames(xgb_pred_proba) = col
 xgb_pred_proba
 
