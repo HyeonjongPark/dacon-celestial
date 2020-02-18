@@ -1,6 +1,6 @@
 
 ## decision tree
-set.seed(1)
+set.seed(2)
 
 rpart_model <- rpart(type~.,  train[,!colnames(train) %in% c("id")])
 
@@ -13,10 +13,10 @@ rpart_model <- rpart(type~.,  train[,!colnames(train) %in% c("id")])
 #fancyRpartPlot(rpart_model)
 
 rpart_result <- predict(rpart_model, newdata = valid[,!colnames(valid) %in% c("type")], type='class')
-rpart_result_proba <- predict(rpart_model, newdata = valid[,!colnames(valid) %in% c("type")], type ="prob")
 
 confusionMatrix(rpart_result, as.factor(valid$type))  # 0.707
 
+rpart_result_proba <- predict(rpart_model, newdata = valid[,!colnames(valid) %in% c("type")], type ="prob")
 rpart_result_proba
 
 varImp(rpart_model) %>% kable()
@@ -66,16 +66,6 @@ rf_result_proba = rf_result_proba[,c(ncol(rf_result_proba),1:(ncol(rf_result_pro
 
 fwrite(rf_result_proba, "./06submission/rf-pred1.csv")
 
-
-
-
-LogLoss=function(actual, predicted)
-{
-  result=-1/length(actual)*(sum((actual*log(predicted)+(1-actual)*log(1-predicted))))
-  return(result)
-}
-
-LogLoss(rf_result_proba, valid)
 
 
 

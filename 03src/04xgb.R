@@ -13,7 +13,7 @@ parameters <- list(
   silent             = 0,           
   
   # Booster Parameters
-  eta                = 0.3,              
+  eta                = 0.03,              
   gamma              = 0.7,                 
   max_depth          = 10,                
   min_child_weight   = 2,            
@@ -37,27 +37,13 @@ parameters <- list(
 
 parameters
 
-xgb_model <- xgb.train(parameters, data.train, nrounds = 300)
+xgb_model <- xgb.train(parameters, data.train, nrounds = 350)
 
 
 xgb_pred <- predict(xgb_model, data.valid)
 xgb_pred
 
 confusionMatrix(as.factor(xgb_pred), as.factor(as.integer(valid$type))) # 0.872
-
-# softpob으로 설정하고 matrix 아래 코드를 실행해주면 클래스별로 prob을 확인할 수 있다.
-xgb_pred_proba = matrix(xgb_pred, ncol = (length(unique(train$type)) + 1) , byrow = T)[,-1] 
-colnames(xgb_pred_proba) = col
-xgb_pred_proba
-
-xgb_pred_proba = as.data.frame(xgb_pred_proba)
-xgb_pred_proba$id = o_test$id
-
-xgb_pred_proba = xgb_pred_proba[,c(20,1:19)]
-
-# fwrite(xgb_pred_proba, "./06submission/xgb/xgb-pred2.csv")
-
-
 
 xgb.importance(colnames(train[, !colnames(valid) %in% c("type")]), model = xgb_model) %>% kable()
 
@@ -69,16 +55,36 @@ xgb.ggplot.importance(importance_matrix = xgb.imp)
 
 
 
+# softpob으로 설정하고 matrix 아래 코드를 실행해주면 클래스별로 prob을 확인할 수 있다.
+
+xgb_pred <- predict(xgb_model, data.valid)
+xgb_pred_proba = matrix(xgb_pred, ncol = (length(unique(train$type)) + 1) , byrow = T)[,-1] 
+colnames(xgb_pred_proba) = col
+
+
+xgb_pred_proba = as.data.frame(xgb_pred_proba)
+xgb_pred_proba$id = o_test$id
+
+xgb_pred_proba = xgb_pred_proba[,c(20,1:19)]
+
+fwrite(xgb_pred_proba, "./06submission/xgb/xgb-pred5.csv")
+
+
+
+
+
+
+
 
 
 
 # 그리드 서치 - 하이퍼 파라미터 찾기
 
-searchGridSubCol <- expand.grid(subsample = c(0.7, 0.8, 0.9), 
-                                colsample_bytree = c(0.5, 0.6, 0.7),
-                                max_depth = c(6, 7, 8),
+searchGridSubCol <- expand.grid(subsample = c(0.5, 0.7, 0.9), 
+                                colsample_bytree = c(0.5, 0.7, 0.9),
+                                max_depth = c(5, 7, 10),
                                 min_child = seq(1), 
-                                eta = c(0.08)
+                                eta = c(0.03, 0.05, 0.1)
 )
 
 ntrees <- 150
