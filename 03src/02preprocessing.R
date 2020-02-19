@@ -8,30 +8,6 @@ col = colnames(submission)[-1]
 o_train$type = factor(o_train$type, level = col)
 
 
-###############################################################
-
-
-o_train %>% skim() %>% kable()
-
-# o_train %>% select(-type) %>% cor() %>% 
-#   corrplot.mixed(upper = "ellipse", tl.cex=.8, tl.pos = 'lt', number.cex = .8)
-
-# o_train %>% select(-type) %>%
-#   corrgram(lower.panel=panel.shade, upper.panel=panel.ellipse)
-
-o_train = train
-
-set.seed(1)
-inTrain <- createDataPartition(o_train$type, p=.9, list = F)
-
-train <- o_train[inTrain,]
-valid <- o_train[-inTrain,]
-rm(inTrain)
-
-train %>% group_by(type) %>% count()
-train %>% nrow  + valid %>% nrow
-
-
 
 
 ##################################################################################
@@ -41,8 +17,8 @@ train %>% nrow  + valid %>% nrow
 # test 데이터셋의 이상치의 기준을 확인
 
 # 실제 제출하고싶을때.
-#train = o_train
-#valid = o_test
+train = o_train
+valid = o_test
 
 valid %>% subset(select = -c(id,fiberID)) %>% summary() 
 valid %>% filter(petroMag_g < 0 ) %>% as.data.frame()
@@ -64,8 +40,8 @@ for(type_class in levels(train$type)){
   print(type_class)
   temp = train %>% filter(type == type_class) %>% subset(select = -c(id,type,fiberID)) 
   id_col = train %>% filter(type == type_class) %>% select(id,type,fiberID)
-  temp[temp > 150] = NA
-  temp[temp < -150] = NA
+  temp[temp > 300] = NA
+  temp[temp < -300] = NA
   temp = cbind(id_col, temp)
 
   train2 = rbind(train2,temp)
@@ -87,8 +63,10 @@ train3 %>% summary
 train3 = train3 %>% arrange(id)
 colSums(is.na(train3))
 
-train3 
+
 train = train3
+
+
 
 # 
 # 
@@ -116,4 +94,32 @@ train = train3
 # valid <- o_train[-inTrain,]
 # rm(inTrain)
 # 
-fwrite(train3, "./02preprocessing-data/train2.csv")
+#fwrite(train3, "./02preprocessing-data/train2.csv")
+
+
+
+
+
+###############################################################
+
+
+train %>% skim() %>% kable()
+
+# train %>% select(-type) %>% cor() %>% 
+#   corrplot.mixed(upper = "ellipse", tl.cex=.8, tl.pos = 'lt', number.cex = .8)
+
+# train %>% select(-type) %>%
+#   corrgram(lower.panel=panel.shade, upper.panel=panel.ellipse)
+
+
+
+set.seed(1)
+inTrain <- createDataPartition(train$type, p=.9, list = F)
+
+train <- train[inTrain,]
+valid <- train[-inTrain,]
+rm(inTrain)
+
+train %>% group_by(type) %>% count()
+train %>% nrow  + valid %>% nrow
+

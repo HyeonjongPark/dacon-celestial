@@ -37,19 +37,21 @@ parameters <- list(
 
 parameters
 
-xgb_model <- xgb.train(parameters, data.train, nrounds = 350)
+xgb_model <- xgb.train(parameters, data.train, nrounds = 3000)
 
 
 xgb_pred <- predict(xgb_model, data.valid)
 xgb_pred
 
-confusionMatrix(as.factor(xgb_pred), as.factor(as.integer(valid$type))) # 0.872
+confusionMatrix(as.factor(xgb_pred), as.factor(as.integer(valid$type))W) # 0.872
 
 xgb.importance(colnames(train[, !colnames(valid) %in% c("type")]), model = xgb_model) %>% kable()
 
 xgb.imp <- xgb.importance(colnames(train[, !colnames(valid) %in% c("type","id")]), model = xgb_model)
 
 xgb.ggplot.importance(importance_matrix = xgb.imp)
+
+
 
 
 
@@ -67,7 +69,7 @@ xgb_pred_proba$id = o_test$id
 
 xgb_pred_proba = xgb_pred_proba[,c(20,1:19)]
 
-fwrite(xgb_pred_proba, "./06submission/xgb/xgb-pred5.csv")
+fwrite(xgb_pred_proba, "./06submission/xgb/xgb-pred8.csv")
 
 
 
