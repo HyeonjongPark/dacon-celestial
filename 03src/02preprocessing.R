@@ -98,12 +98,22 @@ train = train3
 
 
 
+library(caret)
 
+dummy_col = train[,c("id","fiberID")]
+
+dummy <- dummyVars(" ~ .", data=dummy_col)
+newdata <- data.frame(predict(dummy, newdata = dummy_col)) 
+
+train$fiberID = NULL
+newdata$id = NULL
+
+train = cbind(train, newdata)
 
 ###############################################################
 
 
-train %>% skim() %>% kable()
+#train %>% skim() %>% kable()
 
 # train %>% select(-type) %>% cor() %>% 
 #   corrplot.mixed(upper = "ellipse", tl.cex=.8, tl.pos = 'lt', number.cex = .8)
