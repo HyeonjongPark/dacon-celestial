@@ -68,6 +68,58 @@ train = train3
 
 
 
+
+
+
+
+
+
+train %>% colnames()
+
+## train 데이터와 test 데이터 병합후 더미변수화 진행
+train_d = train
+valid_d = valid
+
+tr_type = train_d$type
+train_d$type = NULL
+
+train_d %>% colnames()
+valid_d %>% colnames()
+
+train_d %>% nrow()
+valid_d %>% nrow()
+
+merge_d = rbind(train_d, valid_d)
+merge_d %>% nrow
+
+
+
+library(caret)
+
+merge_d$fiberID = as.factor(merge_d$fiberID)
+dummy_col = merge_d[,c("id","fiberID")]
+
+dummy <- dummyVars(" ~ .", data=dummy_col)
+newdata <- data.frame(predict(dummy, newdata = dummy_col)) 
+
+merge_d$fiberID = NULL
+newdata$id = NULL
+
+merge_d = cbind(merge_d, newdata)
+
+merge_d %>% colnames() 
+
+train = merge_d[1:nrow(train_d),]
+train$type = tr_type
+
+valid = merge_d[(nrow(train_d) + 1):(nrow(merge_d)),]
+
+ncol(train)
+ncol(valid)
+
+#fwrite(train, "./02preprocessing-data/train3.csv")
+#fwrite(valid, "./02preprocessing-data/test3.csv")
+
 # 
 # 
 # 
@@ -98,17 +150,18 @@ train = train3
 
 
 
-library(caret)
-
-dummy_col = train[,c("id","fiberID")]
-
-dummy <- dummyVars(" ~ .", data=dummy_col)
-newdata <- data.frame(predict(dummy, newdata = dummy_col)) 
-
-train$fiberID = NULL
-newdata$id = NULL
-
-train = cbind(train, newdata)
+## valid data dummy!
+# 
+# valid$fiberID = as.factor(valid$fiberID)
+# dummy_col2 = valid[,c("id","fiberID")]
+# 
+# dummy2 <- dummyVars(" ~ .", data=dummy_col2)
+# newdata2 <- data.frame(predict(dummy2, newdata = dummy_col2)) 
+# 
+# valid$fiberID = NULL
+# newdata2$id = NULL
+# 
+# valid = cbind(valid, newdata2)
 
 ###############################################################
 
@@ -122,6 +175,15 @@ train = cbind(train, newdata)
 #   corrgram(lower.panel=panel.shade, upper.panel=panel.ellipse)
 
 
+
+
+
+
+
+
+## 내부 검증
+
+## partitioning
 
 set.seed(1)
 inTrain <- createDataPartition(train$type, p=.9, list = F)

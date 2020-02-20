@@ -24,8 +24,8 @@ parameters <- list(
   alpha              = 0,       
   
   # Task Parameters
-  objective          = "multi:softprob",   # default = "reg:linear" , "softmax", softprob
-  eval_metric        = "logloss",          # merror , logloss
+  objective          = "multi:softmax",   # default = "reg:linear" , "softmax", softprob
+  eval_metric        = "merror",          # merror , logloss
   num_class          = length(unique(train$type)) + 1, # 클래스 갯수
   seed               = 1,                 # reproducability seed
   tree_method        = "hist",
@@ -37,13 +37,13 @@ parameters <- list(
 
 parameters
 
-xgb_model <- xgb.train(parameters, data.train, nrounds = 3000)
+xgb_model <- xgb.train(parameters, data.train, nrounds = 500)
 
 
 xgb_pred <- predict(xgb_model, data.valid)
 xgb_pred
 
-confusionMatrix(as.factor(xgb_pred), as.factor(as.integer(valid$type))W) # 0.872
+confusionMatrix(as.factor(xgb_pred), as.factor(as.integer(valid$type))) # 0.872
 
 xgb.importance(colnames(train[, !colnames(valid) %in% c("type")]), model = xgb_model) %>% kable()
 
@@ -69,7 +69,7 @@ xgb_pred_proba$id = o_test$id
 
 xgb_pred_proba = xgb_pred_proba[,c(20,1:19)]
 
-fwrite(xgb_pred_proba, "./06submission/xgb/xgb-pred8.csv")
+fwrite(xgb_pred_proba, "./06submission/xgb/xgb-pred9.csv")
 
 
 
